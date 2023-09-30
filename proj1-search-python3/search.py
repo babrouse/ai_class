@@ -72,6 +72,30 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def tinyMazeSearch2(problem):
+    """
+    I wanted to see if I could make a new function that could solve the tiny maze
+    in a differnent path to make sure I understand how it works
+    """
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
+    n = Directions.NORTH
+    e = Directions.EAST
+    return [w, w, w, w, s, s, e, s, s, w]
+
+def testSearch(problem):
+    """
+    I'm going to use this to test looking at boards step-by-step
+    """
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
+    n = Directions.NORTH
+    e = Directions.EAST
+
+    return[s]
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -87,7 +111,20 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions
+    from util import Stack, Queue, PriorityQueue
+    n = Directions.NORTH
+    e = Directions.EAST
+    s = Directions.SOUTH
+    w = Directions.WEST
+
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+
+
+    # util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
