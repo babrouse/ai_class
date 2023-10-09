@@ -50,6 +50,15 @@ class GoWestAgent(Agent):
             return Directions.WEST
         else:
             return Directions.STOP
+        
+class GoEastandWestAgent(Agent):
+    " Testing to see if I can make my own agent do things."
+
+    def getAction(self, state):
+        if Directions.EAST in state.getLegalPacmanActions():
+            return Directions.EAST
+        else:
+            return Directions.WEST
 
 #######################################################
 # This portion is written for you, but will only work #

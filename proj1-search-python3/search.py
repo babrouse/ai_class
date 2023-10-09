@@ -118,13 +118,22 @@ def depthFirstSearch(problem):
     s = Directions.SOUTH
     w = Directions.WEST
 
-    print("Start:", problem.getStartState())
+
+    current_state = problem.getStartState()
+    game_queue = Queue()
+    game_queue.push(problem.getSuccessors(problem.getStartState())[1])
+    game_queue.push(problem.getSuccessors(problem.getStartState())[0])
+
+    print("Game Queue:", game_queue.list)
+
+    print("Start:", current_state)
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
 
 
-    # util.raiseNotDefined()
+
+    util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
