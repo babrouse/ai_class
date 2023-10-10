@@ -114,30 +114,35 @@ def depthFirstSearch(problem):
     from game import Directions
     from util import Stack, Queue, PriorityQueue
 
-    # current_state = problem.getStartState()
-    # game_queue = Queue()
-    # game_queue.push(problem.getSuccessors(problem.getStartState())[0])
-    # game_queue.push(problem.getSuccessors(problem.getStartState())[1])
+    """
+    Graph Search Pseudocode:
+    function graph_search(problem, fringe) returns a solution or failure
+    closed - an empty set
+    fring - insert (make-node(initial-state(problem)), fringe)
 
-    # print("Game Queue:", game_queue.list)
+    loop do
+        if fringe is empty then return failure
+        node -remote-front(fring)
+        if goal-test(problem, state[node]) then return node
+        if state[node] not in(closed) then
+            add state[node] to closed
+            fringe -insert-all(expand(node,problem),fring)
+    end
+    """
 
-    game_stack = Stack()
+    # Initialize some vectors
+    fringe = Stack()
     visited = []
+
+    start_state = problem.getStartState()
+    fringe.push(start_state)
+
+    # while fringe.isEmpty != True:
+    #     if fringe.isEmpty == True:
     
-    cur_state = problem.getStartState()
-    game_stack.push(cur_state)
+    
 
-    print(game_stack.list) 
-    print(cur_state)
-
-
-
-    # print("Start:", cur_state)
-    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
-
-
+    print(fringe.list)
 
     util.raiseNotDefined()
 
