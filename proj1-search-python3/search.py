@@ -113,22 +113,28 @@ def depthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     from game import Directions
     from util import Stack, Queue, PriorityQueue
-    n = Directions.NORTH
-    e = Directions.EAST
-    s = Directions.SOUTH
-    w = Directions.WEST
+
+    # current_state = problem.getStartState()
+    # game_queue = Queue()
+    # game_queue.push(problem.getSuccessors(problem.getStartState())[0])
+    # game_queue.push(problem.getSuccessors(problem.getStartState())[1])
+
+    # print("Game Queue:", game_queue.list)
+
+    game_stack = Stack()
+    visited = []
+    
+    cur_state = problem.getStartState()
+    game_stack.push(cur_state)
+
+    print(game_stack.list) 
+    print(cur_state)
 
 
-    current_state = problem.getStartState()
-    game_queue = Queue()
-    game_queue.push(problem.getSuccessors(problem.getStartState())[1])
-    game_queue.push(problem.getSuccessors(problem.getStartState())[0])
 
-    print("Game Queue:", game_queue.list)
-
-    print("Start:", current_state)
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    # print("Start:", cur_state)
+    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
 
 
