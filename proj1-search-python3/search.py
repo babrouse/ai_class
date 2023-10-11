@@ -183,7 +183,20 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
+
     "*** YOUR CODE HERE ***"
+    # I /think/ this will be implemented similarly but using the queue instead of the stack so hopefully
+    # less commenting this time...
+    from util import Queue
+
+    closed = set()
+    fringe = Queue()
+    fringe.push((problem.getStartState(), []))
+
+    print(fringe.list)
+
+
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
