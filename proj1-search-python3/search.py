@@ -200,10 +200,10 @@ def breadthFirstSearch(problem):
     # Determine the start states for mediumMaze and bigMaze: (34, 16)
 
     # I'll test if it's the least cost solution by blocking one path from the get go. Ideal path is cost 68!
-    # closed.add() # cost of 74 for mediumMaze
+    closed.add((33,16)) # cost of 74 for mediumMaze
 
     while fringe.isEmpty() != True:
-        # A key difference here is that we dequeue the earliest enqueued item, not the most recent!
+        # This is the only difference from what I did above!
         state, path = fringe.pop()
 
         if problem.isGoalState(state) == True:
