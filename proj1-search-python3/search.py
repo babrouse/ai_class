@@ -136,12 +136,14 @@ def depthFirstSearch(problem):
     """
     # Initialize a set for visited nodes
     closed = set()
+    closed.add((4, 5)) # test to see if we can 'block' pacman by saying he's already gone left
 
     # Initialize a stack to be our fringe and add the start state plus the direction to get there (none)
     # This part had me tricked for a minute since getStartState only returns coordinates, extra parenthesis
     # were needed is all to also include the [].
     fringe = Stack()
-    fringe.push((problem.getStartState(), []))
+    start_state = problem.getStartState()
+    fringe.push((start_state, []))
 
     # Main loop for this algorithm runs as long as the fringe isn't empty (arrived at goal) to which at that
     # point the path that's been filling as we expand is returned. Otherwise, empty path is returned.
@@ -154,17 +156,17 @@ def depthFirstSearch(problem):
             return path
         
         # Here is where we start to avoid revisiting states, if the current state isn't in the closed set, then
-        # we add it.
+        # we add it to say we've been here.
         elif state not in closed:
             closed.add(state)
 
-            # grab possible next states
+            # grab possible next states. This is an array of triples so we can iterate over this in next step
             successors = problem.getSuccessors(state)
             
-            # iterate through them
             for next_state, dir, step_cost in successors:
                 
-                # here is where we actually make sure not to go back into previously visited nodes
+                # here is where we actually make sure not to go back into previously visited nodes - if next_state
+                # was in closed, then we are stuck or we move to the other state
                 if next_state not in closed:
                     
                     # If the next node hasn't been visited, we add the direction of movement to path
@@ -172,8 +174,9 @@ def depthFirstSearch(problem):
                     add_path = path + [dir]
                     fringe.push((next_state, add_path))
         
-        # I put this little guy here so I could watch the fringe expand
+        # These little guys were for testing purposes - closed should only grow by one node at a time if working
         # print(fringe.list)
+        # print(closed)
 
     # The empty path (failure). I tested this with a maze with no solution and it returns the index error:
     # "popped from empty list.""
@@ -191,11 +194,35 @@ def breadthFirstSearch(problem):
 
     closed = set()
     fringe = Queue()
-    fringe.push((problem.getStartState(), []))
+    start_state = problem.getStartState()
+    fringe.push((start_state, []))
+    
+    # Determine the start states for mediumMaze and bigMaze: (34, 16)
 
-    print(fringe.list)
+    # I'll test if it's the least cost solution by blocking one path from the get go. Ideal path is cost 68!
+    # closed.add() # cost of 74 for mediumMaze
 
+    while fringe.isEmpty() != True:
+        # A key difference here is that we dequeue the earliest enqueued item, not the most recent!
+        state, path = fringe.pop()
 
+        if problem.isGoalState(state) == True:
+            return path
+        
+        elif state not in closed:
+            closed.add(state)
+
+            successors = problem.getSuccessors(state)
+
+            for next_state, dir, step_cost in successors:
+
+                if next_state not in closed:
+                    add_path = path + [dir]
+                    fringe.push((next_state, add_path))
+        # print(fringe.list)
+        # print(closed)
+
+    return []
 
     util.raiseNotDefined()
 
