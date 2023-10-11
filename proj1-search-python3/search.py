@@ -114,35 +114,31 @@ def depthFirstSearch(problem):
     from game import Directions
     from util import Stack, Queue, PriorityQueue
 
+    n = Directions.NORTH
+    e = Directions.EAST
+    s = Directions.SOUTH
+    w = Directions.WEST
+
     """
     Graph Search Pseudocode:
     function graph_search(problem, fringe) returns a solution or failure
     closed - an empty set
-    fring - insert (make-node(initial-state(problem)), fringe)
+    fringe - insert (make-node(initial-state(problem)), fringe)
 
     loop do
         if fringe is empty then return failure
-        node -remote-front(fring)
+        node -remove-front(fringe)
         if goal-test(problem, state[node]) then return node
         if state[node] not in(closed) then
             add state[node] to closed
-            fringe -insert-all(expand(node,problem),fring)
+            fringe -insert-all(expand(node,problem),fringe)
     end
     """
 
-    # Initialize some vectors
-    fringe = Stack()
-    visited = []
-
-    start_state = problem.getStartState()
-    fringe.push(start_state)
-
-    # while fringe.isEmpty != True:
-    #     if fringe.isEmpty == True:
+    """
+    Let's break this down again - 
+    """
     
-    
-
-    print(fringe.list)
 
     util.raiseNotDefined()
 
