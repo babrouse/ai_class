@@ -134,11 +134,50 @@ def depthFirstSearch(problem):
             fringe -insert-all(expand(node,problem),fringe)
     end
     """
+    # Initialize a set for visited nodes
+    closed = set()
 
-    """
-    Let's break this down again - 
-    """
-    
+    # Initialize a stack to be our fringe and add the start state plus the direction to get there (none)
+    # This part had me tricked for a minute since getStartState only returns coordinates, extra parenthesis
+    # were needed is all to also include the [].
+    fringe = Stack()
+    fringe.push((problem.getStartState(), []))
+
+    # Main loop for this algorithm runs as long as the fringe isn't empty (arrived at goal) to which at that
+    # point the path that's been filling as we expand is returned. Otherwise, empty path is returned.
+    while fringe.isEmpty != True:
+        # Initially this sets the state as the start state and the path as the current fringe
+        state, path = fringe.pop()
+
+        # Always check first if we're at the goal. If so, we're done and we return the path to the goal
+        if problem.isGoalState(state) == True:
+            return path
+        
+        # Here is where we start to avoid revisiting states, if the current state isn't in the closed set, then
+        # we add it.
+        elif state not in closed:
+            closed.add(state)
+
+            # grab possible next states
+            successors = problem.getSuccessors(state)
+            
+            # iterate through them
+            for next_state, dir, step_cost in successors:
+                
+                # here is where we actually make sure not to go back into previously visited nodes
+                if next_state not in closed:
+                    
+                    # If the next node hasn't been visited, we add the direction of movement to path
+                    # and push it into the fringe with the next_state
+                    add_path = path + [dir]
+                    fringe.push((next_state, add_path))
+        
+        # I put this little guy here so I could watch the fringe expand
+        # print(fringe.list)
+
+    # The empty path (failure). I tested this with a maze with no solution and it returns the index error:
+    # "popped from empty list.""
+    return []
 
     util.raiseNotDefined()
 
