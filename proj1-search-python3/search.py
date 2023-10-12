@@ -197,13 +197,14 @@ def breadthFirstSearch(problem):
     start_state = problem.getStartState()
     fringe.push((start_state, []))
     
-    # Determine the start states for mediumMaze and bigMaze: (34, 16)
+    # Determine the start states for mediumMaze: (34, 16)
 
     # I'll test if it's the least cost solution by blocking one path from the get go. Ideal path is cost 68!
-    closed.add((33,16)) # cost of 74 for mediumMaze
+    # closed.add((33,16)) # cost of 74 for mediumMaze
 
     while fringe.isEmpty() != True:
-        # This is the only difference from what I did above!
+        # The only difference occurs here - since BFS uses a FIFO order, this fring.pop() dequeues the first
+        # that was in rather than the LIFO stack of DFS
         state, path = fringe.pop()
 
         if problem.isGoalState(state) == True:
@@ -229,6 +230,52 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+
+    from util import PriorityQueue, Queue
+
+    # obviously need the visited stuff still and need to initialize
+    closed = set()
+    fringe = PriorityQueue()
+    start_state = problem.getStartState()
+
+    # closed.add((33,16))
+
+    # PriorityQueue now takes 3 arguments (self, item, priority) so start is obviously priority 0
+    # push is fine here since starts as empty PriorityQueue
+    fringe.push((start_state, []), 0)
+
+    # have to use heap instead of list - wanted tos ee what this data structure looked like
+    print(fringe.heap)
+
+    # basically same while loop except...
+    while fringe.isEmpty() != True:
+        # The state with highest priority (which is least cost, I believe) and dequeue it
+        state, path = fringe.pop()
+
+        if problem.isGoalState(state) == True:
+            return path
+        
+        elif state not in closed:
+            closed.add(state)
+
+            successors = problem.getSuccessors(state)
+
+            for next_state, dir, step_cost in successors:
+
+                if next_state not in closed:
+                    add_path = path + [dir]
+
+                    # use getCostOfActions to calculate total cost of a path
+                    cost_of_path = problem.getCostOfActions(add_path)
+
+                    # add to the fringe with the consideration of how costly the path is
+                    # thus the fringe can organize based on cost of a path - I think we need
+                    # to use the update method so it can shuffle the priorities to be pushed
+                    fringe.update((next_state, add_path), cost_of_path)
+
+        # print(fringe.heap)
+    return []
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -241,6 +288,52 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    """
+    This is going to be the same as the uniform search cost except instead of assigning
+    priority 0 at the start, we'll just assign it the heuristic given in the arguement.
+    As a check, doing this with the nullHeuristic just returns the UCS.
+    """
+    from util import PriorityQueue
+
+    closed = set()
+    fringe = PriorityQueue()
+    start_state = problem.getStartState()
+
+    # 
+    goal_cost = 0
+
+    # Throw the heuristic in instead of 0
+    fringe.update((start_state, []), 0)
+
+    while fringe.isEmpty() != True:
+        state, path = fringe.pop()
+
+        if problem.isGoalState(state) == True:
+            return path
+
+        if state not in closed:
+            closed.add(state)
+
+            successors = problem.getSuccessors(state)
+
+            for next_state, dir, step_cost in successors:
+
+                add_path = path + [dir]
+
+                cost_of_path = problem.getCostOfActions(add_path)
+                #
+                new_goal_cost = goal_cost - cost_of_path
+                #
+                priority = new_goal_cost + heuristic(next_state, problem)
+                
+
+                fringe.update((next_state, add_path), priority)
+
+
+        # print(fringe.heap)
+
+    return []
+    
     util.raiseNotDefined()
 
 
