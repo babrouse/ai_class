@@ -290,7 +290,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
     """
     This is going to be the same as the uniform search cost except instead of assigning
-    priority 0 at the start, we'll just assign it the heuristic given in the arguement.
+    priority 0 at the start, we'll just assign it the heuristic given in the argument.
     As a check, doing this with the nullHeuristic just returns the UCS.
     """
     from util import PriorityQueue
@@ -299,11 +299,11 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     fringe = PriorityQueue()
     start_state = problem.getStartState()
 
-    # 
-    goal_cost = 0
+    # Start with an initial estimated cost to goal rather than 0 (just below)
+    goal_cost = heuristic(start_state, problem)
 
     # Throw the heuristic in instead of 0
-    fringe.update((start_state, []), 0)
+    fringe.update((start_state, []), goal_cost)
 
     while fringe.isEmpty() != True:
         state, path = fringe.pop()
@@ -320,12 +320,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
                 add_path = path + [dir]
 
-                cost_of_path = problem.getCostOfActions(add_path)
-                #
-                new_goal_cost = goal_cost - cost_of_path
-                #
-                priority = new_goal_cost + heuristic(next_state, problem)
+                new_path_cost = problem.getCostOfActions(add_path)
+                new_goal_cost = heuristic(next_state, problem)
                 
+                priority = new_path_cost + new_goal_cost
 
                 fringe.update((next_state, add_path), priority)
 
