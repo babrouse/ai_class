@@ -305,6 +305,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     # Throw the heuristic in instead of 0
     fringe.update((start_state, []), goal_cost)
 
+    # Loop stays the same
     while fringe.isEmpty() != True:
         state, path = fringe.pop()
 
@@ -320,9 +321,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
                 add_path = path + [dir]
 
+                # Here we not only calculate the current cost of the path as before but...
                 new_path_cost = problem.getCostOfActions(add_path)
+                
+                # Now we use the heuristic to estimate the cost remaining to get to the goal
                 new_goal_cost = heuristic(next_state, problem)
                 
+                # Priority becomes the actual path cost + the estimated cost to goal
                 priority = new_path_cost + new_goal_cost
 
                 fringe.update((next_state, add_path), priority)
