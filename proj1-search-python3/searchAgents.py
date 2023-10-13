@@ -339,16 +339,22 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            current_position, corners = state
-            x,y = current_position
+            # A lot of this here follows directly from the default agent
+            # Extract the x,y positions and corners from the state
+            pos, corners = state
+            x,y = pos
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
 
+            # Again pulled from above, but as we visit corners, we remove them from the corners array
             if not self.walls[nextx][nexty]:
                 nextState = (nextx, nexty)
+
+                # get that list of corners
                 closed = list(corners)
 
-                if nextState in closed:
+                # if the next state is in the corners, remove it
+                if nextState in corners:
                     closed.remove(nextState)
                 successors.append(((nextState, tuple(closed)), action, 1))
 
