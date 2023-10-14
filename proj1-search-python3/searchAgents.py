@@ -297,7 +297,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.visited_corners = ()
+        self.corners_list = list(self.corners) # Need to access them dang corners
 
     def getStartState(self):
         """
@@ -328,7 +328,7 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
+        # print(self.corners[0][1], self.corners[1][1]) # Testing I can access corners
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
