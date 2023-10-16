@@ -271,6 +271,14 @@ def euclideanHeuristic(position, problem, info={}):
     xy2 = problem.goal
     return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
 
+def chebyshev_distance(point1, point2):
+    x1, y1 = point1
+    x2, y2 = point2
+    dx = abs(x1 - x2)
+    dy = abs(y1 - y2)
+    return max(dx, dy)
+
+
 #####################################################
 # This portion is incomplete.  Time to write code!  #
 #####################################################
@@ -392,6 +400,20 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+
+    position, corners = state
+
+    if not corners:
+        return 0
+    
+    min_distance = float('inf')
+
+    for corner in corners:
+        distance = chebyshev_distance(position, corner)
+        if distance < min_distance:
+            min_distance = distance
+
+    return min_distance
 
 
 class AStarCornersAgent(SearchAgent):
