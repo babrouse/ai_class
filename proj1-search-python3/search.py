@@ -111,13 +111,7 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    from game import Directions
-    from util import Stack, Queue, PriorityQueue
-
-    n = Directions.NORTH
-    e = Directions.EAST
-    s = Directions.SOUTH
-    w = Directions.WEST
+    from util import Stack
 
     """
     Graph Search Pseudocode:
@@ -225,13 +219,11 @@ def breadthFirstSearch(problem):
 
     return []
 
-    util.raiseNotDefined()
-
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
 
-    from util import PriorityQueue, Queue
+    from util import PriorityQueue
 
     # obviously need the visited stuff still and need to initialize
     closed = set()
