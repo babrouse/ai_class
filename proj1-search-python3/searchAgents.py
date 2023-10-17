@@ -577,21 +577,18 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        from game import Directions
-        s = Directions.SOUTH
-        w = Directions.WEST
-        n = Directions.NORTH
-        e = Directions.EAST
+        # Most of the above is a red herring I think
 
-        "*** YOUR CODE HERE ***"
-        food_list = food.asList()
-        dist_list = set()
+        import search
 
-        for i in range(len(food_list)):
-            dist_list.add(manhattan_distance(startPosition, food_list[i]))
-            i = i + 1
-
-        print(dist_list)
+        # I used all of these for testing purposes since no heuristic
+        # return search.dfs(problem)
+        # return search.bfs(problem)
+        # return search.ucs(problem)
+        return search.astar(problem)
+    
+        # after some finagling with the GoalState - this WAS quick
+        # thanks for the hint on x,y = state
         
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -628,11 +625,10 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        print(self.food)
-        if self.food == 0:
-            return True
-        else:
-            return False
+        # since we choose self as an argument and self includes food, just check
+        # if each point is a food or not  and it should end when no more food
+        food = self.food
+        return food[x][y]
 
 
 def mazeDistance(point1, point2, gameState):
