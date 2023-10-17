@@ -271,12 +271,27 @@ def euclideanHeuristic(position, problem, info={}):
     xy2 = problem.goal
     return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
 
-def chebyshev_distance(point1, point2):
-    x1, y1 = point1
-    x2, y2 = point2
+# These seem more readable to me but I understand how they're the same as above.
+def chebyshev_distance(r1, r2):
+    x1, y1 = r1
+    x2, y2 = r2
     dx = abs(x1 - x2)
     dy = abs(y1 - y2)
     return max(dx, dy)
+
+def manhattan_distance(r1, r2):
+    x1, y1 = r1
+    x2, y2 = r2
+    dx = abs(x1 - x2)
+    dy = abs(y1 - y2)
+    return dx + dy
+
+def euclidean_distance(r1, r2):
+    x1, y1 = r1
+    x2, y2 = r2
+    dx = abs(x1 - x2)
+    dy = abs(y1 - y2)
+    r = (dx**2 + dy**2)**0.5
 
 
 #####################################################
@@ -400,20 +415,25 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-
+    # initialize
     position, corners = state
 
     if not corners:
         return 0
     
+    # initialize this to in infinity so that in our upcoming loop, every calculated
+    # distance is less to start with
     min_distance = float('inf')
 
-    for corner in corners:
-        distance = chebyshev_distance(position, corner)
-        if distance < min_distance:
-            min_distance = distance
+    # iterate through the corners array to find current distance before moving
+    for c in corners:
+        r = manhattan_distance(position, c)
+        if r < min_distance:
+            min_distance = r # This should always be true on the first go around
 
     return min_distance
+
+# Note that this does give us below 1600 (1567) but I think Manhattan does better ()
 
 
 class AStarCornersAgent(SearchAgent):
@@ -478,6 +498,7 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
 
+
 def foodHeuristic(state, problem):
     """
     Your heuristic for the FoodSearchProblem goes here.
@@ -507,8 +528,26 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    
     "*** YOUR CODE HERE ***"
-    return 0
+    remaining_food = foodGrid.asList()
+
+    # If there's no remaining food, we return a distance of 0
+    if not remaining_food:
+        return 0
+
+    # a function for calculating closest food pellet, similar to corners
+    def food_pos(position, food_list):
+        # start closest distance at infinity
+        closest_distance = float('inf')
+        for food in food_list:
+            # One reason this is set up this way is so I can switch distances quickly
+            r = manhattan_distance(position, food)
+            if r < closest_distance:
+                closest_distance = r
+        return closest_distance
+    
+    return food_pos(position, remaining_food)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -538,8 +577,22 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
+        from game import Directions
+        s = Directions.SOUTH
+        w = Directions.WEST
+        n = Directions.NORTH
+        e = Directions.EAST
+
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        food_list = food.asList()
+        dist_list = set()
+
+        for i in range(len(food_list)):
+            dist_list.add(manhattan_distance(startPosition, food_list[i]))
+            i = i + 1
+
+        print(dist_list)
+        
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -575,7 +628,12 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        print(self.food)
+        if self.food == 0:
+            return True
+        else:
+            return False
+
 
 def mazeDistance(point1, point2, gameState):
     """

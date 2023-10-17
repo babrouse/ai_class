@@ -328,8 +328,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         # print(fringe.heap)
 
     return []
-    
-    util.raiseNotDefined()
 
 
 # Abbreviations
