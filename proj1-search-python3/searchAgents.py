@@ -626,7 +626,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
         "*** YOUR CODE HERE ***"
         # since we choose self as an argument and self includes food, just check
-        # if each point is a food or not  and it should end when no more food
+        # if each point is a food or not and it should end when no more food
         food = self.food
         return food[x][y]
 
