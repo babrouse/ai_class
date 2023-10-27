@@ -12,7 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-from util import manhattanDistance
+from util import manhattanDistance, euclideanDistance
 from game import Directions
 import random, util
 
@@ -80,12 +80,41 @@ class ReflexAgent(Agent):
         # print(newGhostStates)
         # print(newScaredTimes)
 
-        
+        # Define an evaluation score
+        pot_score = successorGameState.getScore()
 
+        # Make a list of the current food state:
+        food_list = newFood.asList()
 
+        ## Define how to prioritize food
+        # If there's still food..
+        if len(food_list) > 0:
+            food_dists = []
 
+            # Calculate the distance to food
+            for i in range(len(food_list)):
+                dist = manhattanDistance(newPos, food_list[i])
 
-        return successorGameState.getScore()
+                food_dists.append(dist)
+            
+            # Find the closest food
+            if len(food_dists) > 0:
+                close_food = min(food_dists)
+
+            # Tell the agent that closest food is preferable
+            pot_score += 1 / close_food
+
+        for i, ghost_state in enumerate(newGhostStates):
+            g_dist = manhattanDistance(newPos, ghost_state.getPosition())
+            # print(g_dist)
+            if g_dist <= 5 and newScaredTimes[i] == 0:
+                pot_score += -69
+
+        # print(newGhostStates[0].getPosition())
+                
+
+        return pot_score
+        # return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
     """
