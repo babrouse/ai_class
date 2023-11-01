@@ -188,6 +188,18 @@ class MinimaxAgent(MultiAgentSearchAgent):
         elif depth = maxDepth:
             return evaluationFunction(state), None
 
+        # Now lets consider the agent, Pacman has index 0 so we need to see if we're maxing,
+        # so check if it's pacman and if it is, we'll work on maxing.
+        elif agentIndex == 0:
+            # Start with the max score being very small and no best action yet
+            agent = 0
+            max_score = -10000000000
+            nact = None         # Next action
+            for i in state.getLegalActions(agent):
+                nstate = 
+
+
+
 
         
 
