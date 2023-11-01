@@ -175,6 +175,22 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+
+    # This will need to be recursive so I'm going to create a bunch of functions
+    def minimax(state, depth, agentIndex):
+
+        # Check to see if the game has won or lost
+        if state.isWin() or state.isLose():
+            return evaluationFunction(state), None
+
+        # Check to see if the agent is at the max depth of the minimax tree
+        # This could be combined with above but they're technically different in my mind
+        elif depth = maxDepth:
+            return evaluationFunction(state), None
+
+
+        
+
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
