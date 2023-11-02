@@ -175,33 +175,86 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        return self.minimax(gameState, 0, 0)[1]
+    
+    def maxi(self, state, depth):
+        low_bound = -10000000000
+        nact = None
+        agent = 0
+        for i in state.getLegalActions(agent): # iterate through actions
+
+            nstate = state.generateSuccessor(agent, i) # next state
+            # move to next depth and perform the mini function with ghosts as agent
+            
+
+            pot_score = self.minimax(nstate, depth, 1)[0]
+
+            if pot_score > low_bound:
+                low_bound = pot_score
+                nact = i
+        return low_bound, nact
+
 
     # This will need to be recursive so I'm going to create a bunch of functions
-    def minimax(state, depth, agentIndex):
+    def minimax(self, state, depth, agentIndex):
+        maxDepth = self.depth
+    
 
         # Check to see if the game has won or lost
         if state.isWin() or state.isLose():
-            return evaluationFunction(state), None
+            return self.evaluationFunction(state), None
 
         # Check to see if the agent is at the max depth of the minimax tree
         # This could be combined with above but they're technically different in my mind
-        elif depth = maxDepth:
-            return evaluationFunction(state), None
+        elif depth == maxDepth:
+            return self.evaluationFunction(state), None
 
         # Now lets consider the agent, Pacman has index 0 so we need to see if we're maxing,
         # so check if it's pacman and if it is, we'll work on maxing.
         elif agentIndex == 0:
             # Start with the max score being very small and no best action yet
-            agent = 0
-            max_score = -10000000000
+            low_bound = -10000000000
             nact = None         # Next action
-            for i in state.getLegalActions(agent):
-                nstate = 
+            for i in state.getLegalActions(agentIndex):
 
+                nstate = state.generateSuccessor(agentIndex, i) # Next state
 
+                 # move to next depth and perform the minimax function with ghosts as the agent
+                value = self.minimax(nstate, depth, 1)[0]
 
-
+                if value > low_bound:
+                    low_bound = value # Close in on a new minimum score
+                    nact = i
+            return low_bound, nact
         
+        # elif agentIndex == 0:
+        #     # Execute the maxmimizing function as pacman is supposed to maximize
+        #     return self.maxi(state, depth)
+        
+        
+        # Same stuff but for a minimizing agent - the spooky ghosts
+        elif agentIndex >= 1:
+            high_bound = 10000000000 # Initial very high score
+            nact = None
+
+            # basically same as above
+            for i in state.getLegalActions(agentIndex):
+                nstate = state.generateSuccessor(agentIndex, i)
+
+                # Check to see if this is the last ghost:
+                if agentIndex == state.getNumAgents() - 1:
+                    # If last ghost, increase depth and move onto pacman (agent 0)
+                    value = self.minimax(nstate, depth + 1, 0)[0]
+
+                    # Otherwise move onto the next ghost
+                else:
+                    value = self.minimax(nstate, depth, agentIndex + 1)[0]
+                
+                if value < high_bound:
+                    high_bound = value
+                    nact = i
+            return high_bound, nact
+
 
         util.raiseNotDefined()
 
@@ -216,6 +269,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
