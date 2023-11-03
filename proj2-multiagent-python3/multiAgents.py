@@ -179,10 +179,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     # This will need to be recursive so I'm going to create a bunch of functions (a whopping 3)    
     def maxi(self, state, depth, agentIndex):
-        low_bound = -10000000000
+        # Initialize the lower bound, next action, and agent
+        low_bound = -10000000000        
         nact = None
         agent = agentIndex
-        for i in state.getLegalActions(agent): # iterate through actions
+
+        # Iterate through possible actions
+        for i in state.getLegalActions(agent):
             nstate = state.generateSuccessor(agent, i) # next state
 
             pot_score = self.minimax(nstate, depth, 1)[0] # run minimax and pull the returned score
@@ -195,11 +198,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
         high_bound = 100000000000
         nact = None
 
-        for i in state.getLegalActions(agentIndex):
-            nstate = state.generateSuccessor(agentIndex, i)
+        agent = agentIndex
+
+        for i in state.getLegalActions(agent):
+            nstate = state.generateSuccessor(agent, i)
 
             if agentIndex == state.getNumAgents() - 1:
-                pot_score = self.minimax(nstate, depth+1, 0)[0]
+                pot_score = self.minimax(nstate, depth + 1, 0)[0]
 
             else:
                 pot_score = self.minimax(nstate, depth, agentIndex + 1)[0]
@@ -225,7 +230,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         elif agentIndex == 0:
             # Execute the maxmimizing function as pacman is supposed to maximize
-            return self.maxi(state, depth)
+            return self.maxi(state, depth, agentIndex)
         
         else:
             return self.mini(state, depth, agentIndex)
