@@ -290,13 +290,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
     """
+    A, B = -10000000000, 100000000000
 
     def getAction(self, gameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        A, B = -10000000000, 100000000000
 
         return self.minimax(gameState, 0, 0, A, B)[1]
 
@@ -310,8 +310,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             nstate = state.generateSuccessor(agent, i) # next state
 
             pot_score = self.minimax(nstate, depth, 1, A, B)[0] # run minimax and pull the returned score
-            if pot_score > low_bound:
+            if pot_score > B:
                 low_bound = pot_score
+                A = max(A, pot_score)
                 nact = i
         return low_bound, nact
 
@@ -330,8 +331,16 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
             if pot_score < high_bound:
                 high_bound = pot_score
+                B = min(B, pot_score)
                 nact = i
         return high_bound, nact
+    
+    # def max_value(state, A, B, agentIndex):
+    #     v = -100000000000
+    #     agent = agentIndex
+    #     for i in state.getLegalActions(agent):
+    #         nstate = state.generateSuccessor(agent, i)
+    #         v = max(v, )
 
 
     # This will need to be recursive so I'm going to create a bunch of functions
@@ -350,9 +359,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         elif agentIndex == 0:
             # Execute the maxmimizing function as pacman is supposed to maximize
+            print(A, B)
             return self.maxi(state, depth, A, B)
         
         else:
+            print(A, B)
             return self.mini(state, depth, agentIndex, A, B)
         util.raiseNotDefined()
 
