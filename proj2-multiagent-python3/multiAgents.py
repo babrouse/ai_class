@@ -302,10 +302,10 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
     # Copy/pasted a lot of stuff from minimax
     
-    def maxi(self, state, depth, A, B):
+    def maxi(self, state, depth, agentIndex, A, B):
         low_bound = -10000000000
         nact = None
-        agent = 0
+        agent = agentIndex
         for i in state.getLegalActions(agent): # iterate through actions
             nstate = state.generateSuccessor(agent, i) # next state
 
@@ -361,7 +361,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         elif agentIndex == 0:
             # Execute the maxmimizing function as pacman is supposed to maximize
             # print(A, B)
-            return self.maxi(state, depth, A, B)
+            return self.maxi(state, depth, agentIndex, A, B)
         
         else:
             # print(A, B)
@@ -372,95 +372,67 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
-      Your expectimax agent (question 4)
+    Your expectimax agent - MUCH OF THIS COPY PASTED
     """
 
     def getAction(self, gameState):
         """
         Returns the expectimax action using self.depth and self.evaluationFunction
-
-        All ghosts should be modeled as choosing uniformly at random from their
-        legal moves.
         """
-        "*** YOUR CODE HERE ***"
+        # self.expanded_node_count = 0
+        action = self.expectimax(gameState, 0, 0)[1]
+        return action
 
-        return self.expectimax(gameState, 0, 0)[1]
-
-    # This will need to be recursive so I'm going to create a bunch of functions (a whopping 3)    
-    def maxi(self, state, depth, agentIndex):
-        # Initialize the lower bound, next action, and agent
-        low_bound = -10000000000        
+    def maxi(self, state, depth, agentIndex): # No changes here yet 1351
+        low_bound = -100000000000
         nact = None
         agent = agentIndex
-
-        # Iterate through possible actions
         for i in state.getLegalActions(agent):
-            nstate = state.generateSuccessor(agent, i) # next state
+            nstate = state.generateSuccessor(agent, i)
 
-            pot_score = self.expecti(nstate, depth, 1)[0] # run minimax and pull the returned score
+            pot_score = self.expectimax(nstate, depth, 1)[0]
+
             if pot_score > low_bound:
                 low_bound = pot_score
                 nact = i
+
         return low_bound, nact
-
-    # def mini(self, state, depth, agentIndex):
-    #     high_bound = 100000000000
-    #     nact = None
-
-    #     agent = agentIndex
-
-    #     for i in state.getLegalActions(agent):
-    #         nstate = state.generateSuccessor(agent, i)
-
-    #         if agentIndex == state.getNumAgents() - 1:
-    #             pot_score = self.expectimax(nstate, depth + 1, 0)[0]
-
-    #         else:
-    #             pot_score = self.expectimax(nstate, depth, agentIndex + 1)[0]
-
-    #         if pot_score < high_bound:
-    #             high_bound = pot_score
-    #             nact = i
-    #     return high_bound, nact
-
-
-    def expectimax(self, state, depth, agentIndex):
-        # ... (similar checks as in minimax)
-
-        if agentIndex == 0:
-            return self.maxi(state, depth, agentIndex)
-        else:
-            return self.expecti(state, depth, agentIndex)
-
-    def expecti(self, state, depth, agentIndex):
-        av = 0
+    
+    def expected_value(self, state, depth, agentIndex):
+        exp = 0
         agent = agentIndex
-        nact_array = state.getLegalActions(agent)
 
-        if len(nact_array) == 0:
-            return self.evaluationFunction(state), None
-        
-        for i in nact_array:
+        prob = 1.0 / len(state.getLegalActions(agent))
+
+        for i in state.getLegalActions(agent):
             nstate = state.generateSuccessor(agent, i)
-            nagent = 0
-            ndepth = 0
-            if (agent + 1) < state.getNumAgents():
-                nagent = agent + 1
-            else:
-                nagent = 0
-            
-            if nagent == 0:
+            nag = (agent + 1) % state.getNumAgents()
+            if nag == 0:
                 ndepth = depth + 1
             else:
                 ndepth = depth
-            
-            pot_score = self.expecti(nstate, ndepth, nagent)[0]
-            av += pot_score
+
+            val = self.expectimax(nstate, ndepth, nag)[0]
+
+            exp = exp + (prob * val)
+
+        return exp, None
+    
+    def expectimax(self, state, depth, agentIndex): # Same as above but with expected_value function
+        agent = agentIndex
+        max_depth = self.depth
+
+        if state.isWin() or state.isLose():
+            return self.evaluationFunction(state), None
         
-        av /= len(i)
+        elif depth == max_depth:
+            return self.evaluationFunction(state), None
 
-
-        return av, None
+        elif agent == 0:
+            return self.maxi(state, depth, agent)
+        
+        else:
+            return self.expected_value(state, depth, agent)
 
     # util.raiseNotDefined()
 
