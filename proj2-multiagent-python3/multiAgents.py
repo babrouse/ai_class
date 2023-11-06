@@ -87,7 +87,7 @@ class ReflexAgent(Agent):
         food_list = newFood.asList()
 
         ## Define how to prioritize food
-        # If there's still food..
+        # If there's still food...
         if len(food_list) > 0:
             food_dists = []
 
@@ -102,7 +102,7 @@ class ReflexAgent(Agent):
                 close_food = min(food_dists)
 
             # Tell the agent that closest food is preferable
-            pot_score += 1 / close_food
+            pot_score += 1 / close_food # Dividing per the hint in the assignment
 
         for i, ghost_state in enumerate(newGhostStates):
             g_dist = manhattanDistance(newPos, ghost_state.getPosition())
@@ -189,34 +189,34 @@ class MinimaxAgent(MultiAgentSearchAgent):
             nstate = state.generateSuccessor(agent, i) # next state
 
             pot_score = self.minimax(nstate, depth, 1)[0] # run minimax and pull the returned score
-            if pot_score > low_bound:
-                low_bound = pot_score
-                nact = i
+            if pot_score > low_bound: # Check if the new potential score is greater than the lower bound
+                low_bound = pot_score # if so, set it as the new lower bound
+                nact = i # next action is current iteration
         return low_bound, nact
 
     def mini(self, state, depth, agentIndex):
+        # Initialize higher bound, next action, agent again
         high_bound = 100000000000
         nact = None
-
         agent = agentIndex
 
         for i in state.getLegalActions(agent):
-            nstate = state.generateSuccessor(agent, i)
+            nstate = state.generateSuccessor(agent, i) # next state
 
-            if agentIndex == state.getNumAgents() - 1:
-                pot_score = self.minimax(nstate, depth + 1, 0)[0]
+            if agentIndex == state.getNumAgents() - 1: # check if last ghost
+                pot_score = self.minimax(nstate, depth + 1, 0)[0] # move on to pacman in next depth
 
-            else:
-                pot_score = self.minimax(nstate, depth, agentIndex + 1)[0]
+            else: # stay at current depth but let next ghost take its 'turn'
+                pot_score = self.minimax(nstate, depth, agentIndex + 1)[0] 
 
-            if pot_score < high_bound:
+            if pot_score < high_bound: # same logic as above but for high bound
                 high_bound = pot_score
                 nact = i
         return high_bound, nact
 
 
     def minimax(self, state, depth, agentIndex):
-        # check to see if the agent is at the depth of the tree
+        # assign max depth
         maxDepth = self.depth
     
         # Check to see if the game has won or lost
@@ -231,7 +231,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
         elif agentIndex == 0:
             # Execute the maxmimizing function as pacman is supposed to maximize
             return self.maxi(state, depth, agentIndex)
-        
+
+            # Or execute ghosts minimizing function
         else:
             return self.mini(state, depth, agentIndex)
         
@@ -280,11 +281,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return high_bound, nact
         """
 
-
-                    
-
-
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -296,11 +293,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Using alpha-beta pruning with a copy of the minimax function
         """
         "*** YOUR CODE HERE ***"
-        A, B = -10000000000, 100000000000
+        A, B = -100000000000, 100000000000 # start with very small/big alpha and beta
 
         return self.alpha_beta(gameState, 0, 0, A, B)[1]
 
-    # Copy/pasted a lot of stuff from minimax
+    # Copy/pasted a lot of stuff from minimax just had to add alpha/beta args
     
     def maxi(self, state, depth, agentIndex, A, B):
         low_bound = -10000000000
@@ -320,6 +317,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if low_bound > B:
                 return low_bound, nact
             A = max(A, low_bound)
+            # Updating A here is how we prune - it updates the new lowest score pacman will go for
         return low_bound, nact
 
     # mostly the same except for last note
@@ -344,10 +342,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if high_bound < A:
                 return high_bound, nact
             B = min(B, high_bound)
+            # Same logic as above but for the minimizing function
         return high_bound, nact
 
 
-    # LARGELY COPY PASTED FROM ABOVE
+    # LARGELY COPY/PASTED FROM ABOVE
     def alpha_beta(self, state, depth, agentIndex, A, B):
         maxDepth = self.depth
     
@@ -358,11 +357,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             return self.evaluationFunction(state), None
 
         elif agentIndex == 0:
-            # print(A, B) # was keep track of α-ß values
+            # print(A, B) # was to keep track of α-ß values
             return self.maxi(state, depth, agentIndex, A, B)
         
         else:
-            # print(A, B) # see above
+            # print(A, B) # was to keep track of α-ß values
             return self.mini(state, depth, agentIndex, A, B)
         
     # util.raiseNotDefined()
@@ -381,10 +380,12 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         action = self.expectimax(gameState, 0, 0)[1]
         return action
 
-    def maxi(self, state, depth, agentIndex): # No changes here yet 1351
+    def maxi(self, state, depth, agentIndex):
+        # no changes here other than using expectimax instead of minimax
         low_bound = -100000000000
         nact = None
         agent = agentIndex
+
         for i in state.getLegalActions(agent):
             nstate = state.generateSuccessor(agent, i)
 
@@ -396,23 +397,31 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
         return low_bound, nact
     
+    # Here are the changes, we're using an expected value rather than just min
     def expected_value(self, state, depth, agentIndex):
+        # initialize values, exp = expected value
         exp = 0
         agent = agentIndex
+        num_agents = state.getNumAgents()
+        action_num = len(state.getLegalActions(agent))
 
-        prob = 1.0 / len(state.getLegalActions(agent))
+        # Make probability 1/(length of actions) so we can give equal probability to all actions
+        prob = 1.0 / action_num
 
         for i in state.getLegalActions(agent):
-            nstate = state.generateSuccessor(agent, i)
-            nag = (agent + 1) % state.getNumAgents()
-            if nag == 0:
-                ndepth = depth + 1
+            nstate = state.generateSuccessor(agent, i) # next state
+
+            nag = agent + 1 # move onto next agent
+            
+            if nag >= num_agents: # if next agent is too high, loop back to pacman
+                nag = 0
+                ndepth = depth + 1 # increase depth
             else:
-                ndepth = depth
+                ndepth = depth # otherwise stay in depth and use next agent
 
-            val = self.expectimax(nstate, ndepth, nag)[0]
+            val = self.expectimax(nstate, ndepth, nag)[0] # RECURSION IS FUN
 
-            exp = exp + (prob * val)
+            exp = exp + (prob * val) # new expected value is old + new val*prob of that value
 
         return exp, None
     
