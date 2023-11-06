@@ -322,6 +322,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             A = max(A, low_bound)
         return low_bound, nact
 
+    # mostly the same except for last note
     def mini(self, state, depth, agentIndex, A, B):
         high_bound = 100000000000
         nact = None
@@ -338,33 +339,30 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if pot_score < high_bound:
                 high_bound = pot_score
                 nact = i
+
+            # check to see if new upper bound is greater than α
             if high_bound < A:
                 return high_bound, nact
             B = min(B, high_bound)
         return high_bound, nact
 
 
-    # This will need to be recursive so I'm going to create a bunch of functions
+    # LARGELY COPY PASTED FROM ABOVE
     def alpha_beta(self, state, depth, agentIndex, A, B):
-        # check to see if the agent is at the depth of the tree
         maxDepth = self.depth
     
-        # Check to see if the game has won or lost
         if state.isWin() or state.isLose():
             return self.evaluationFunction(state), None
 
-        # Check to see if the agent is at the max depth of the minimax tree
-        # This could be combined with above but they're technically different in my mind
         elif depth == maxDepth:
             return self.evaluationFunction(state), None
 
         elif agentIndex == 0:
-            # Execute the maxmimizing function as pacman is supposed to maximize
-            # print(A, B)
+            # print(A, B) # was keep track of α-ß values
             return self.maxi(state, depth, agentIndex, A, B)
         
         else:
-            # print(A, B)
+            # print(A, B) # see above
             return self.mini(state, depth, agentIndex, A, B)
         
     # util.raiseNotDefined()
@@ -444,6 +442,7 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+
     util.raiseNotDefined()
 
 # Abbreviation
