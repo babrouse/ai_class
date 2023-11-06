@@ -241,6 +241,13 @@ def manhattanDistance(xy1, xy2):
 def euclideanDistance(xy1, xy2):
     return sqrt((xy1[0] - xy2[0])**2 + (xy1[1] - xy2[1])**2)
 
+def chebyshev_distance(r1, r2):
+    x1, y1 = r1
+    x2, y2 = r2
+    dx = abs(x1 - x2)
+    dy = abs(y1 - y2)
+    return max(dx, dy)
+
 
 """
 Data structures and functions useful for various course projects
