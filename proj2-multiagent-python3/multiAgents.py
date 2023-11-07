@@ -475,7 +475,6 @@ def betterEvaluationFunction(currentGameState):
     ghost_states = currentGameState.getGhostStates()
 
     # stuff to tweak
-
     ghost_score = -1000000000
     ghost_dist_discriminant = 2
     pos_tweak = 20
