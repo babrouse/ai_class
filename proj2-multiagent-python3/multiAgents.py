@@ -12,7 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
-from util import manhattanDistance, euclideanDistance
+from util import manhattanDistance, euclideanDistance, chebyshev_distance
 from game import Directions
 import random, util
 
@@ -448,11 +448,72 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: Taking the hint from the assignment, I'm going to start by considering
+    things we used before in the search and reflex agent. Namely, we'll be considering factors
+    like distances to closest pellet and ghosts to try and push pacman in the right
+    direction and whether or not there's still food on the board. A lot of this should
+    be the same as the reflex agent but for currentGameState rather than successorGameState.
+
+    Basically - Encourage pacman to hunt for food while staying away from ghosts UNLESS
+    the ghosts are scared (pacman ate a capsule) in which case encourage him towards ghosts.
+    Most of this came from setting up some conditions and tweaking the arithmetic to manipulate
+    pacman into doing certain things hence why I have a bunch of variables floating around.
     """
     "*** YOUR CODE HERE ***"
 
-    util.raiseNotDefined()
+    ## Brought this stuff over so that I can reference how to access them
+    ## Useful information you can extract from a GameState (pacman.py)
+    # successorGameState = currentGameState.generatePacmanSuccessor(action)
+    # newPos = successorGameState.getPacmanPosition()
+    # newFood = successorGameState.getFood()
+    # newGhostStates = successorGameState.getGhostStates()
+    # newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+    # initialize some stuff
+    score = currentGameState.getScore()
+    food_list = currentGameState.getFood().asList()
+    ghost_states = currentGameState.getGhostStates()
+
+    # stuff to tweak
+    ghost_score = -1000000000
+    ghost_dist_discriminant = 2
+    pos_tweak = 20
+
+    # food stuff
+    if len(food_list) > 0:
+        closest_food = 10000000000 #initialize closest food as very far away
+        for i in food_list:
+            # calculate distance to food in food_list
+            dist = euclideanDistance(currentGameState.getPacmanPosition(), i)
+
+            # if the dist is closer to food, make it our dist (nearest food)
+            if dist < closest_food:
+                closest_food = dist
+        # we want to prioritize food that's closer so make that it's new score to eval
+        # (meaning subtracting smaller number makes score bigger)
+        score -= closest_food
+
+    # ghost stuff
+    for i in ghost_states:
+        # get ghost position and distance to that ghost
+        ghost_pos = i.getPosition()
+        ghost_dist = euclideanDistance(currentGameState.getPacmanPosition(), ghost_pos)
+
+        # Make sure ghosts not too close.
+        if ghost_dist <= ghost_dist_discriminant:
+            return ghost_score
+        
+        elif i.scaredTimer > 5:
+            # If ghosts are scared, encourage pacman to get closer to them
+            gd_score = pos_tweak - ghost_dist
+            score += gd_score
+
+    return score
+
+    # print(score)
+
+    # util.raiseNotDefined()
+
 
 # Abbreviation
 better = betterEvaluationFunction
