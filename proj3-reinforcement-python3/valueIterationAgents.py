@@ -53,15 +53,48 @@ class ValueIterationAgent(ValueEstimationAgent):
               mdp.getReward(state, action, nextState)
               mdp.isTerminal(state)
         """
-        self.mdp = mdp
+        self.mdp = mdp 
         self.discount = discount
-        self.iterations = iterations
+        self.iterations = iterations # Controlled via -i in terminal
         self.values = util.Counter() # A Counter is a dict with default 0
         self.runValueIteration()
 
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        # iterate over all iterations
+        for i in range(self.iterations):
+            # Need a copy of values of current state - this is used in calculating new values
+            vals_copy = self.values.copy()
+
+            # Iterate over all states
+            for state in self.mdp.getStates():
+                self.values[state] = 0
+                # Check to see if in terminal state
+                if self.mdp.isTerminal(state) == True:
+                    continue
+                
+                # Next possible actions
+                nact = self.mdp.getPossibleActions(state)
+
+                # Let's use the Bellman Equation!
+                low_bound = -1000000000000
+                for act in nact:
+                    val_sum = 0
+                    for t in self.mdp.GetTransitionStatesAndProbs(state, act):
+                        nstate, prob = t
+                        val_sum += prob * (self.mdp.getReward(state, act, nstate) + self.discount * vals_copy[nstate])
+
+                    low_bound = max(low_bound, val_sum)
+
+                self.values[state] = low_bound
+
+
+
+                    
+
+
+
 
 
     def getValue(self, state):
