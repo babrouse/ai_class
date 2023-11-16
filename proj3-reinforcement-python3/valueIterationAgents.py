@@ -62,7 +62,21 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        for i in self.mdp.getStates():
+            self.values[i] = 0.0
 
+        while i <= range(self.iterations):
+            vals = self.values.copy()
+
+            for state in self.mdp.getStates():
+                self.values[state] = -10000000000
+
+                for action in self.mdp.getPossibleActions(state):
+                    init_value = 0.0
+                    nact, prob = self.mdp.getTransitionStatesandProbs(state, action)
+
+                    while j <= range(nact):
+                        
 
     def getValue(self, state):
         """
