@@ -62,20 +62,20 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-        for i in self.mdp.getStates():
-            self.values[i] = 0.0
+        # for i in self.mdp.getStates():
+        #     self.values[i] = 0.0
 
-        while i <= range(self.iterations):
-            vals = self.values.copy()
+        # while i <= range(self.iterations):
+        #     vals = self.values.copy()
 
-            for state in self.mdp.getStates():
-                self.values[state] = -10000000000
+        #     for state in self.mdp.getStates():
+        #         self.values[state] = -10000000000
 
-                for action in self.mdp.getPossibleActions(state):
-                    init_value = 0.0
-                    nact, prob = self.mdp.getTransitionStatesandProbs(state, action)
+        #         for action in self.mdp.getPossibleActions(state):
+        #             init_value = 0.0
+        #             nact, prob = self.mdp.getTransitionStatesandProbs(state, action)
 
-                    while j <= range(nact):
+        #             while j <= range(nact):
                         
 
     def getValue(self, state):
@@ -91,7 +91,19 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        val = 0 # Initialize the original value we'll compute
+        nstate = None
+        prob = 0
+
+        # Use the bellman equation here
+        for i, j in self.mdp.getTransitionStatesAndProbs(state, action):
+            nstate = i
+            prob = j
+
+            val = val + prob * (self.mdp.getReward(state, action, nstate) + self.discount * self.values(nstate))
+
+        return val
+        # util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
         """
@@ -103,7 +115,18 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if self.mdp.isTerminal(state):
+            return None
+        high_bound = -1000000000
+        act = None
+
+        for i in self.mdp.getPossibleActions(state):
+            q_val = self.computeQValueFromValues(state, i)
+            if q_val >= high_bound:
+                high_bound, act = q_val, i
+        
+        return act
+        # util.raiseNotDefined()
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
