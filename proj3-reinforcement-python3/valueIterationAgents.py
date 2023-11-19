@@ -62,20 +62,28 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-        # for i in self.mdp.getStates():
-        #     self.values[i] = 0.0
+        for i in range(self.iterations):
+            # copy current values so we don't lose them
+            prev_vals = self.values.copy()
 
-        # while i <= range(self.iterations):
-        #     vals = self.values.copy()
+            # iterate through states
+            for state in self.mdp.getStates():
+                # initiate very low values for states
+                self.values[state] = -1000000000
 
-        #     for state in self.mdp.getStates():
-        #         self.values[state] = -10000000000
+                # iterate and use the bellman equation
+                for action in self.mdp.getPossibleActions(state):
+                    value = 0
 
-        #         for action in self.mdp.getPossibleActions(state):
-        #             init_value = 0.0
-        #             nact, prob = self.mdp.getTransitionStatesandProbs(state, action)
+                    for nstate, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+                        value += prob * (self.mdp.getReward(state, action, nstate) + self.discount * prev_vals[nstate])
+                        
+                    if self.values[state] <= value:
+                        self.values[state] = value
 
-        #             while j <= range(nact):
+                if self.values[state] == -1000000000:
+                    self.values[state] = 0.0
+
                         
 
     def getValue(self, state):
@@ -91,19 +99,14 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        val = 0 # Initialize the original value we'll compute
-        nstate = None
-        prob = 0
+        act_val = 0 # Initialize the original value we'll compute
 
-        # Use the bellman equation here
-        for i, j in self.mdp.getTransitionStatesAndProbs(state, action):
-            nstate = i
-            prob = j
+        # iterate and use the bellman equation here
+        for nstate, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+            # update the value of the action
+            act_val += prob * (self.mdp.getReward(state, action, nstate) + self.discount*self.values[nstate])
 
-            val = val + prob * (self.mdp.getReward(state, action, nstate) + self.discount * self.values(nstate))
-
-        return val
-        # util.raiseNotDefined()
+        return act_val
 
     def computeActionFromValues(self, state):
         """
@@ -117,13 +120,15 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         if self.mdp.isTerminal(state):
             return None
+        
         high_bound = -1000000000
         act = None
 
         for i in self.mdp.getPossibleActions(state):
             q_val = self.computeQValueFromValues(state, i)
             if q_val >= high_bound:
-                high_bound, act = q_val, i
+                high_bound = q_val
+                act = i
         
         return act
         # util.raiseNotDefined()

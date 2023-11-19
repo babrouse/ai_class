@@ -21,41 +21,52 @@
 
 def question2():
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0.01 # Lowering noise means the intended outcome is more probable
     return answerDiscount, answerNoise
 
+"""
+Notes: lower living reward gives agent a sense of urgency
+
+"""
 def question3a():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    # More negative living reward and less noise encourages
+    # agent to walk the cliff but seek a quick end state
+    answerDiscount = 0.9
+    answerNoise = 0.1
+    answerLivingReward = -3
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
 def question3b():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    answerDiscount = 0.1
+    answerNoise = 0.1
+    answerLivingReward = -3
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
 def question3c():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    # High long term reward, little noise, and more negative living
+    # reward means get to long goal quickly, since little risk
+    answerDiscount = 0.9
+    answerNoise = 0.001
+    answerLivingReward = -3
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
 def question3d():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    # Agent is okay with taking its time since the risk of falling
+    # into the cliff is significant
+    answerDiscount = 0.9
+    answerNoise = 0.5
+    answerLivingReward = -0.001
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
 def question3e():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+    # high living reward means agent gonna sit still
+    answerDiscount = 0.5
+    answerNoise = 0.1
+    answerLivingReward = 10
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
