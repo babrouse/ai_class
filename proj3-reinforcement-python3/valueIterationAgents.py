@@ -172,7 +172,22 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
-        
+        states = self.mdp.getStates()
+
+        for i in range(self.iterations):
+            state = states[i % len(states)]
+
+            if not self.mdp.isTerminal(state):
+                high_bound = -1000000000
+
+                for act in self.mdp.getPossibleActions(state):
+                    q_value = self.computeQValueFromValues(state, act)
+
+                    if q_value > high_bound:
+                        high_bound = q_value
+
+                self.values[state] = high_bound
+
 
 
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
@@ -192,6 +207,102 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
         self.theta = theta
         ValueIterationAgent.__init__(self, mdp, discount, iterations)
 
+    # ALSO MY CODE!!!!!!!!!!!! :)
+    # Need to compute predecessors so making a function for that
+    def computePreds(self):
+        # dict for predecessors
+        preds = {}
+        for state in self.mdp.getStates():
+            preds[state] = set()
+
+        for state in self.mdp.getStates():
+            for act in self.mdp.getPossibleActions(state):
+                for nstate, prob in self.mdp.getTransitionStatesAndProbs(state, act):
+                    preds[nstate].add(state)
+        return preds
+        
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+        # Following the algorithm given in the problem statement:
+        # Compute predecessors:
+        preds = self.computePreds()
 
+        # Start with an empty priority queue
+        priQ = util.PriorityQueue()
+
+        # Step 3: Update Priority Queue
+        # Iterate over all the states and compute the difference between the
+        # current value and the highest possible Q value (hence max)
+        for state in self.mdp.getStates():
+            if self.mdp.isTerminal(state) != True: ####
+                high_q = -1000000000
+
+                for act in self.mdp.getPossibleActions(state):
+                    q_val = self.computeQValueFromValues(state, act)
+                    if q_val > high_q:
+                        high_q = q_val
+                
+                dq = abs(self.values[state] - high_q) # Dairy Queen lol
+
+                priQ.update(state, -dq)
+
+        # Iterate silly!
+        for i in range(self.iterations):
+            # First check if the priority queue is empty, if it is, break since
+            # no need to compute anything
+            if priQ.isEmpty() == True:
+                break
+            
+            # pop the highest priority state
+            state = priQ.pop()
+
+            # Check to see if the state is terminal since terminal states don't have acts
+            # If not terminal, set the value of the state to the max Q-value
+            if self.mdp.isTerminal(state) != True:
+                high_q = -1000000000
+
+                # Similar to above
+                for act in self.mdp.getPossibleActions(state):
+                    q_val = self.computeQValueFromValues(state, act)
+                    if q_val > high_q:
+                        high_q = q_val
+                self.values[state] = high_q
+
+            # iterate through preds now
+            for pred in preds[state]:
+                # Similar to above
+                # REMEMBER: we're calculating preds now, not current state
+                if self.mdp.isTerminal(pred) != True:
+                    max_pred_q = -1000000000
+
+                    for act in self.mdp.getPossibleActions(pred):
+                        pred_q = self.computeQValueFromValues(pred, act)
+                        if pred_q > max_pred_q:
+                            max_pred_q = pred_q
+                    dq = abs(self.values[pred] - max_pred_q)
+
+                    # This updates the priority queue if the difference is greater than some
+                    # threshold theta, ensuring we don't waste time updating for small changes
+                    if dq > self.theta:
+                        priQ.update(pred, -dq)
+                    
+
+
+
+
+
+
+
+        # # Step 4: Perform Iterations
+        # for _ in range(self.iterations):
+        #     if priQ.isEmpty():
+        #         break
+        #     state = priQ.pop()
+        #     if not self.mdp.isTerminal(state):
+        #         self.values[state] = max([self.computeQValueFromValues(state, a) for a in self.mdp.getPossibleActions(state)])
+
+        #     for p in preds[state]:
+        #         if not self.mdp.isTerminal(p):
+        #             diff = abs(self.values[p] - max([self.computeQValueFromValues(p, a) for a in self.mdp.getPossibleActions(p)]))
+        #             if diff > self.theta:
+        #                 priQ.update(p, -diff)
