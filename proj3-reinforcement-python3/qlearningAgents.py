@@ -69,6 +69,7 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
+        # Access actions
         acts = self.getLegalActions(state)
         
         # If no legal actions (must be in terminal state) return 0.0
@@ -91,6 +92,7 @@ class QLearningAgent(ReinforcementAgent):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
+        # Access actions
         acts = self.getLegalActions(state)
 
         # Most of this will be structured very similar to the previous function
@@ -101,6 +103,7 @@ class QLearningAgent(ReinforcementAgent):
         high_bound = -1000000000
         best_acts = []
 
+        # Iterate and update Qs
         for act in acts:
             q_val = self.getQValue(state, act)
 
@@ -133,7 +136,7 @@ class QLearningAgent(ReinforcementAgent):
             return None
         
         # Flip a coin and return a random action if true
-        # note that flipCoin takes epsilon as an argument, then chooses a random value
+        # note that flipCoin takes p (epsilon) as an argument, then chooses a random value
         # between 0 and 1. If r < p, return True.
         if util.flipCoin(self.epsilon) == True:
             return random.choice(acts)
@@ -155,7 +158,7 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-        # Note I have access to self.alpha and self.discount
+        # use self.alpha and self.discount
 
         # Grab current Q value
         cur_Q = self.getQValue(state, action)
@@ -234,14 +237,30 @@ class ApproximateQAgent(PacmanQAgent):
           where * is the dotProduct operator
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # I don't quite understand featExtractor but I guess just
+        # returning some functions value
+        w = self.getWeights()
+        feat = self.featExtractor.getFeatures(state, action)
+
+        return w * feat # gross
+
+        # util.raiseNotDefined()
 
     def update(self, state, action, nextState, reward):
         """
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # This is pretty straight forward, modified bellman eqn stuff
+        feat = self.featExtractor.getFeatures(state, action)
+
+        nstate_Q = self.computeValueFromQValues(nextState)
+        cur_Q = self.getQValue(state, action)
+
+        for f in feat:
+            diff = reward + self.discount * nstate_Q - cur_Q
+            self.weights[f] += self.alpha * diff * feat[f]
+        # util.raiseNotDefined()
 
     def final(self, state):
         "Called at the end of each game."
@@ -252,4 +271,7 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
+            print("feature and weights:")
+            for f, w in self.weights.items():
+                print(f"{f}: {w}")
             pass

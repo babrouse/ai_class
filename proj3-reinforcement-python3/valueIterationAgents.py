@@ -59,8 +59,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.values = util.Counter() # A Counter is a dict with default 0
         self.runValueIteration()
 
-    def runValueIteration(self):
-        # Write value iteration code here
+    def runValueIteration(self): # This was probably the hardest part, lots of nesting
         "*** YOUR CODE HERE ***"
         for i in range(self.iterations):
             # copy current values so we don't lose them
@@ -68,6 +67,11 @@ class ValueIterationAgent(ValueEstimationAgent):
 
             # iterate through states
             for state in self.mdp.getStates():
+                # first check to see if any available actions
+                if len(self.mdp.getPossibleActions(state)) == 0:
+                    self.values[state] = 0.0
+                    continue
+
                 # initiate very low values for states
                 self.values[state] = -1000000000
 
@@ -80,9 +84,6 @@ class ValueIterationAgent(ValueEstimationAgent):
                         
                     if self.values[state] <= value:
                         self.values[state] = value
-
-                if self.values[state] == -1000000000:
-                    self.values[state] = 0.0
 
                         
 
@@ -118,12 +119,15 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
+        # if terminal state, don't return anything
         if self.mdp.isTerminal(state):
             return None
         
+        # initialize
         high_bound = -1000000000
         act = None
 
+        # pretty self explanatory at this point
         for i in self.mdp.getPossibleActions(state):
             q_val = self.computeQValueFromValues(state, i)
             if q_val >= high_bound:
@@ -175,8 +179,12 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
         states = self.mdp.getStates()
 
         for i in range(self.iterations):
+            # this part was tricky! Gotta use a modulus to cycle through states but also WRAPPING
+            # around said states so it repeats through all of the iterations
             state = states[i % len(states)]
 
+            # make sure not a terminal state, if not, let's roll!
+            # the rest is pretty straight forward
             if not self.mdp.isTerminal(state):
                 high_bound = -1000000000
 
@@ -209,6 +217,8 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
 
     # ALSO MY CODE!!!!!!!!!!!! :)
     # Need to compute predecessors so making a function for that
+    # Basically here we iterate over all states and keep track of what state can lead to that
+    # we add it to the dict preds
     def computePreds(self):
         # dict for predecessors
         preds = {}
@@ -230,11 +240,11 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
         # Start with an empty priority queue
         priQ = util.PriorityQueue()
 
-        # Step 3: Update Priority Queue
         # Iterate over all the states and compute the difference between the
-        # current value and the highest possible Q value (hence max)
+        # current value and the highest possible Q value
+        # (tried doing this with max before but this is more readable)
         for state in self.mdp.getStates():
-            if self.mdp.isTerminal(state) != True: ####
+            if self.mdp.isTerminal(state) != True:
                 high_q = -1000000000
 
                 for act in self.mdp.getPossibleActions(state):
@@ -286,23 +296,3 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
                     if dq > self.theta:
                         priQ.update(pred, -dq)
                     
-
-
-
-
-
-
-
-        # # Step 4: Perform Iterations
-        # for _ in range(self.iterations):
-        #     if priQ.isEmpty():
-        #         break
-        #     state = priQ.pop()
-        #     if not self.mdp.isTerminal(state):
-        #         self.values[state] = max([self.computeQValueFromValues(state, a) for a in self.mdp.getPossibleActions(state)])
-
-        #     for p in preds[state]:
-        #         if not self.mdp.isTerminal(p):
-        #             diff = abs(self.values[p] - max([self.computeQValueFromValues(p, a) for a in self.mdp.getPossibleActions(p)]))
-        #             if diff > self.theta:
-        #                 priQ.update(p, -diff)
