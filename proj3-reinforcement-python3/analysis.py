@@ -71,9 +71,16 @@ def question3e():
     # If not possible, return 'NOT POSSIBLE'
 
 def question8():
+    # After trying many values, I'm sure this isn't possible
+    # I think it's due to the random element - if epsilon is 0.5
+    # half the time the agent is going to just return to start,
+    # the other half it's gonna choose something random.
+    # Within 50 episodes, it just isn't a big enough training iteration size
+    # to overcome the random element.
     answerEpsilon = None
     answerLearningRate = None
-    return answerEpsilon, answerLearningRate
+    return 'NOT POSSIBLE'
+    # return answerEpsilon, answerLearningRate
     # If not possible, return 'NOT POSSIBLE'
 
 if __name__ == '__main__':
